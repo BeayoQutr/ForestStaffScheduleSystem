@@ -1,0 +1,13 @@
+[Database]
+; MySQL ODBC 驱动名称，根据实际安装的版本调整
+Driver=MySQL ODBC 9.7 Unicode Driver
+; 数据库服务器地址
+Server=127.0.0.1
+; 端口号
+Port=3306
+; 数据库名称
+Database=forest_schedule_system
+; 用户名
+User=root
+; 密码（请填写你的实际密码）
+Password=

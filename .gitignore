@@ -1,0 +1,44 @@
+# 构建目录
+build/
+cmake-build-*/
+out/
+
+# Qt Creator
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.qbs.user.*.qmake.cache
+*.autosave
+CMakeLists.txt.user*
+
+# Qt 自动生成
+*_autogen/
+
+# 编译产物
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.moc
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 数据库配置（含密码，不应提交）
+database.ini
+
+# macOS
+.DS_Store
+Thumbs.db
