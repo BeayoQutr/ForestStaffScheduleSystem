@@ -31,6 +31,7 @@ EmployeeWidget::EmployeeWidget(QWidget *parent)
     m_ageSpin = new QSpinBox(formBox);
     m_ageSpin->setRange(16, 80);
     m_ageSpin->setValue(30);
+    m_ageSpin->setButtonSymbols(QAbstractSpinBox::NoButtons);
     m_phoneEdit = new QLineEdit(formBox);
     m_positionEdit = new QLineEdit(formBox);
     m_departmentEdit = new QLineEdit(formBox);

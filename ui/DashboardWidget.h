@@ -30,8 +30,8 @@ private:
     QTableWidget *m_attendanceTable = nullptr;
 
     QFrame *createStatCard(const QString &name, QLabel **valueLabel);
-    void fillScheduleTable();
-    void fillAttendanceTable();
+    void fillScheduleTable(const QList<Schedule> &schedules);
+    void fillAttendanceTable(const QList<Attendance> &records);
 };
 
 #endif

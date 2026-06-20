@@ -32,7 +32,6 @@ private:
     void fillTable(const QList<Attendance> &records);
     void clearForm();
     void onRowSelected(int row);
-    int findExistingRecordId(int employeeId, const QDate &date);
 };
 
 #endif

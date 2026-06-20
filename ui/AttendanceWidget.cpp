@@ -78,11 +78,12 @@ AttendanceWidget::AttendanceWidget(QWidget *parent)
 
     connect(saveButton, &QPushButton::clicked, this, [this]() {
         Attendance attendance = formAttendance();
-        if (m_attendanceService.existsAttendance(attendance.employeeId, attendance.attendanceDate)) {
+        const int existingId = m_attendanceService.findIdByEmployeeAndDate(attendance.employeeId, attendance.attendanceDate);
+        if (existingId > 0) {
             if (QMessageBox::question(this, "覆盖确认", "该员工当天已有出勤记录，是否覆盖？") != QMessageBox::Yes) {
                 return;
             }
-            attendance.id = findExistingRecordId(attendance.employeeId, attendance.attendanceDate);
+            attendance.id = existingId;
             if (m_attendanceService.updateAttendance(attendance)) {
                 QMessageBox::information(this, "操作成功", "出勤记录已覆盖。");
                 clearForm();
@@ -193,7 +194,4 @@ void AttendanceWidget::onRowSelected(int row)
     m_remarkEdit->setText(m_table->item(row, 6)->text());
 }
 
-int AttendanceWidget::findExistingRecordId(int employeeId, const QDate &date)
-{
-    return m_attendanceService.findIdByEmployeeAndDate(employeeId, date);
-}
+

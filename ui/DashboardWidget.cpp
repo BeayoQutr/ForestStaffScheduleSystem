@@ -98,16 +98,12 @@ void DashboardWidget::refreshData()
     m_todayAttendanceValue->setText(QString::number(todayRecords.size()));
     m_weekScheduleValue->setText(QString::number(weekSchedules.size()));
 
-    fillScheduleTable();
-    fillAttendanceTable();
+    fillScheduleTable(weekSchedules);
+    fillAttendanceTable(todayRecords);
 }
 
-void DashboardWidget::fillScheduleTable()
+void DashboardWidget::fillScheduleTable(const QList<Schedule> &schedules)
 {
-    const QDate today = QDate::currentDate();
-    const QDate weekStart = today.addDays(1 - today.dayOfWeek());
-    const QList<Schedule> schedules = m_scheduleService.getSchedulesByWeek(weekStart);
-
     const int rowCount = qMin(schedules.size(), 8);
     m_scheduleTable->setRowCount(rowCount);
     for (int row = 0; row < rowCount; ++row) {
@@ -124,9 +120,8 @@ void DashboardWidget::fillScheduleTable()
     }
 }
 
-void DashboardWidget::fillAttendanceTable()
+void DashboardWidget::fillAttendanceTable(const QList<Attendance> &records)
 {
-    const QList<Attendance> records = m_attendanceService.getAttendanceByDate(QDate::currentDate());
     const int rowCount = qMin(records.size(), 8);
     m_attendanceTable->setRowCount(rowCount);
     for (int row = 0; row < rowCount; ++row) {
