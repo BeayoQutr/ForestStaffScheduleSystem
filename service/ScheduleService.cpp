@@ -1,4 +1,5 @@
 #include "ScheduleService.h"
+#include "../model/ScheduleWeek.h"
 
 #include <QMessageBox>
 
@@ -33,7 +34,9 @@ bool ScheduleService::addSchedule(const Schedule &schedule)
     if (!validateSchedule(schedule, false)) {
         return false;
     }
-    return m_scheduleDAO.addSchedule(schedule);
+    Schedule normalizedSchedule = schedule;
+    normalizedSchedule.weekStartDate = ScheduleWeek::startDate(schedule.weekStartDate);
+    return m_scheduleDAO.addSchedule(normalizedSchedule);
 }
 
 bool ScheduleService::updateSchedule(const Schedule &schedule)
@@ -45,7 +48,9 @@ bool ScheduleService::updateSchedule(const Schedule &schedule)
     if (!validateSchedule(schedule, true)) {
         return false;
     }
-    return m_scheduleDAO.updateSchedule(schedule);
+    Schedule normalizedSchedule = schedule;
+    normalizedSchedule.weekStartDate = ScheduleWeek::startDate(schedule.weekStartDate);
+    return m_scheduleDAO.updateSchedule(normalizedSchedule);
 }
 
 bool ScheduleService::deleteSchedule(int id)

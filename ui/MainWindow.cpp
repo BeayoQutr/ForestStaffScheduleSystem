@@ -144,5 +144,7 @@ void MainWindow::switchPage(int index, const QString &title, const QString &subt
 
     if (index == 0) {
         static_cast<DashboardWidget *>(m_stack->widget(0))->refreshData();
+    } else if (index == 4) {
+        static_cast<StatisticsWidget *>(m_stack->widget(4))->refreshData();
     }
 }

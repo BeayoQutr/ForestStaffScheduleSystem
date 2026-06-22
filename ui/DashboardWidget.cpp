@@ -1,4 +1,5 @@
 #include "DashboardWidget.h"
+#include "../model/ScheduleWeek.h"
 
 #include <QDate>
 #include <QFrame>
@@ -89,7 +90,7 @@ QFrame *DashboardWidget::createStatCard(const QString &name, QLabel **valueLabel
 void DashboardWidget::refreshData()
 {
     const QDate today = QDate::currentDate();
-    const QDate weekStart = today.addDays(1 - today.dayOfWeek());
+    const QDate weekStart = ScheduleWeek::startDate(today);
     const QList<Attendance> todayRecords = m_attendanceService.getAttendanceByDate(today);
     const QList<Schedule> weekSchedules = m_scheduleService.getSchedulesByWeek(weekStart);
 

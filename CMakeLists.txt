@@ -28,6 +28,7 @@ add_executable(ForestStaffScheduleSystem
     model/Employee.cpp
     model/Schedule.h
     model/Schedule.cpp
+    model/ScheduleWeek.h
     model/Attendance.h
     model/Attendance.cpp
     dao/UserDAO.h
@@ -63,6 +64,13 @@ add_executable(ForestStaffScheduleSystem
 )
 
 target_link_libraries(ForestStaffScheduleSystem PRIVATE ${QT_LIBS})
+
+include(CTest)
+if(BUILD_TESTING)
+    add_executable(ScheduleWeekTest tests/ScheduleWeekTest.cpp)
+    target_link_libraries(ScheduleWeekTest PRIVATE ${QT_LIBS})
+    add_test(NAME ScheduleWeekTest COMMAND ScheduleWeekTest)
+endif()
 
 if(Qt6_FOUND AND COMMAND qt_finalize_executable)
     qt_finalize_executable(ForestStaffScheduleSystem)

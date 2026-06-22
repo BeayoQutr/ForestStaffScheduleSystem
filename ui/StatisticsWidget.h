@@ -17,8 +17,15 @@ class StatisticsWidget : public QWidget
 {
 public:
     explicit StatisticsWidget(QWidget *parent = nullptr);
+    void refreshData();
 
 private:
+    enum class ViewMode {
+        EmployeeAttendance,
+        WeekSchedules,
+        DateAttendance
+    };
+
     EmployeeDAO m_employeeDAO;
     AttendanceService m_attendanceService;
     ScheduleService m_scheduleService;
@@ -28,6 +35,7 @@ private:
     QLabel *m_activeLabel = nullptr;
     QTextEdit *m_resultEdit = nullptr;
     QTableWidget *m_table = nullptr;
+    ViewMode m_viewMode = ViewMode::EmployeeAttendance;
 
     void loadEmployees();
     void refreshCounts();

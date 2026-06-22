@@ -70,11 +70,12 @@ StatisticsWidget::StatisticsWidget(QWidget *parent)
     connect(refreshButton, &QPushButton::clicked, this, [this]() {
         loadEmployees();
         refreshCounts();
+        refreshData();
     });
 
     loadEmployees();
     refreshCounts();
-    showEmployeeAttendanceStats();
+    refreshData();
 }
 
 void StatisticsWidget::loadEmployees()
@@ -88,8 +89,24 @@ void StatisticsWidget::refreshCounts()
     m_activeLabel->setText("在职员工人数：" + QString::number(m_employeeDAO.countActiveEmployees()));
 }
 
+void StatisticsWidget::refreshData()
+{
+    switch (m_viewMode) {
+    case ViewMode::EmployeeAttendance:
+        showEmployeeAttendanceStats();
+        break;
+    case ViewMode::WeekSchedules:
+        showWeekSchedules();
+        break;
+    case ViewMode::DateAttendance:
+        showDateAttendance();
+        break;
+    }
+}
+
 void StatisticsWidget::showEmployeeAttendanceStats()
 {
+    m_viewMode = ViewMode::EmployeeAttendance;
     const int employeeId = m_employeeCombo->currentData().toInt();
     const QString employeeText = m_employeeCombo->currentText();
     QMap<QString, int> stats = m_attendanceService.countAttendanceByEmployee(employeeId);
@@ -114,6 +131,7 @@ void StatisticsWidget::showEmployeeAttendanceStats()
 
 void StatisticsWidget::showWeekSchedules()
 {
+    m_viewMode = ViewMode::WeekSchedules;
     QDate weekStart = m_dateEdit->date().addDays(1 - m_dateEdit->date().dayOfWeek());
     const QList<Schedule> schedules = m_scheduleService.getSchedulesByWeek(weekStart);
 
@@ -138,6 +156,7 @@ void StatisticsWidget::showWeekSchedules()
 
 void StatisticsWidget::showDateAttendance()
 {
+    m_viewMode = ViewMode::DateAttendance;
     const QList<Attendance> records = m_attendanceService.getAttendanceByDate(m_dateEdit->date());
 
     m_resultEdit->setText("当天出勤情况：" + m_dateEdit->date().toString("yyyy-MM-dd") +

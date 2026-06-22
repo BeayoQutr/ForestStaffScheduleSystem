@@ -1,6 +1,7 @@
 #include "ScheduleDAO.h"
 
 #include "../database/DatabaseManager.h"
+#include "../model/ScheduleWeek.h"
 
 #include <QMessageBox>
 #include <QSqlError>
@@ -34,7 +35,7 @@ bool ScheduleDAO::addSchedule(const Schedule &schedule)
                   "VALUES (:employee_id, :week_start_date, :monday_shift, :tuesday_shift, :wednesday_shift, "
                   ":thursday_shift, :friday_shift, :saturday_shift, :sunday_shift)");
     query.bindValue(":employee_id", schedule.employeeId);
-    query.bindValue(":week_start_date", schedule.weekStartDate);
+    query.bindValue(":week_start_date", schedule.weekStartDate.toString("yyyy-MM-dd"));
     query.bindValue(":monday_shift", schedule.mondayShift);
     query.bindValue(":tuesday_shift", schedule.tuesdayShift);
     query.bindValue(":wednesday_shift", schedule.wednesdayShift);
@@ -58,7 +59,7 @@ bool ScheduleDAO::updateSchedule(const Schedule &schedule)
                   "thursday_shift = :thursday_shift, friday_shift = :friday_shift, saturday_shift = :saturday_shift, "
                   "sunday_shift = :sunday_shift WHERE id = :id");
     query.bindValue(":employee_id", schedule.employeeId);
-    query.bindValue(":week_start_date", schedule.weekStartDate);
+    query.bindValue(":week_start_date", schedule.weekStartDate.toString("yyyy-MM-dd"));
     query.bindValue(":monday_shift", schedule.mondayShift);
     query.bindValue(":tuesday_shift", schedule.tuesdayShift);
     query.bindValue(":wednesday_shift", schedule.wednesdayShift);
@@ -97,9 +98,11 @@ bool ScheduleDAO::existsSchedule(int employeeId, const QDate &weekStartDate, int
 {
     QSqlQuery query(DatabaseManager::instance().database());
     query.prepare("SELECT COUNT(*) FROM schedules WHERE employee_id = :employee_id "
-                  "AND week_start_date = :week_start_date AND id <> :exclude_id");
+                  "AND week_start_date >= :week_start_date AND week_start_date < :week_end_date "
+                  "AND id <> :exclude_id");
     query.bindValue(":employee_id", employeeId);
-    query.bindValue(":week_start_date", weekStartDate);
+    query.bindValue(":week_start_date", ScheduleWeek::startDate(weekStartDate).toString("yyyy-MM-dd"));
+    query.bindValue(":week_end_date", ScheduleWeek::endDateExclusive(weekStartDate).toString("yyyy-MM-dd"));
     query.bindValue(":exclude_id", excludeId);
 
     if (!query.exec()) {
@@ -115,8 +118,10 @@ QList<Schedule> ScheduleDAO::getSchedulesByWeek(const QDate &weekStartDate)
     QSqlQuery query(DatabaseManager::instance().database());
     query.prepare("SELECT s.*, e.employee_no, e.name FROM schedules s "
                   "JOIN employees e ON s.employee_id = e.id "
-                  "WHERE s.week_start_date = :week_start_date ORDER BY e.employee_no");
-    query.bindValue(":week_start_date", weekStartDate);
+                  "WHERE s.week_start_date >= :week_start_date AND s.week_start_date < :week_end_date "
+                  "ORDER BY e.employee_no");
+    query.bindValue(":week_start_date", ScheduleWeek::startDate(weekStartDate).toString("yyyy-MM-dd"));
+    query.bindValue(":week_end_date", ScheduleWeek::endDateExclusive(weekStartDate).toString("yyyy-MM-dd"));
 
     if (!query.exec()) {
         QMessageBox::critical(nullptr, "数据库错误", "查询周排班失败：\n" + query.lastError().text());
@@ -155,9 +160,11 @@ QList<Schedule> ScheduleDAO::getSchedulesByEmployeeAndWeek(int employeeId, const
     QSqlQuery query(DatabaseManager::instance().database());
     query.prepare("SELECT s.*, e.employee_no, e.name FROM schedules s "
                   "JOIN employees e ON s.employee_id = e.id "
-                  "WHERE s.employee_id = :employee_id AND s.week_start_date = :week_start_date");
+                  "WHERE s.employee_id = :employee_id "
+                  "AND s.week_start_date >= :week_start_date AND s.week_start_date < :week_end_date");
     query.bindValue(":employee_id", employeeId);
-    query.bindValue(":week_start_date", weekStartDate);
+    query.bindValue(":week_start_date", ScheduleWeek::startDate(weekStartDate).toString("yyyy-MM-dd"));
+    query.bindValue(":week_end_date", ScheduleWeek::endDateExclusive(weekStartDate).toString("yyyy-MM-dd"));
 
     if (!query.exec()) {
         QMessageBox::critical(nullptr, "数据库错误", "查询指定员工周排班失败：\n" + query.lastError().text());

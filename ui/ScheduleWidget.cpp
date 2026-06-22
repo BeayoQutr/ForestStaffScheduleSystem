@@ -1,6 +1,7 @@
 #include "ScheduleWidget.h"
 
 #include "../database/EmployeeComboHelper.h"
+#include "../model/ScheduleWeek.h"
 
 #include <QComboBox>
 #include <QDate>
@@ -29,8 +30,7 @@ ScheduleWidget::ScheduleWidget(QWidget *parent)
     m_weekDateEdit->setCalendarPopup(true);
     m_weekDateEdit->setDisplayFormat("yyyy-MM-dd");
 
-    const int dayOfWeek = m_weekDateEdit->date().dayOfWeek();
-    m_weekDateEdit->setDate(m_weekDateEdit->date().addDays(1 - dayOfWeek));
+    m_weekDateEdit->setDate(ScheduleWeek::startDate(m_weekDateEdit->date()));
 
     const QStringList labels = {"周一：", "周二：", "周三：", "周四：", "周五：", "周六：", "周日："};
     for (int i = 0; i < 7; ++i) {
@@ -121,6 +121,12 @@ ScheduleWidget::ScheduleWidget(QWidget *parent)
         loadByWeek();
     });
     connect(clearButton, &QPushButton::clicked, this, [this]() { clearForm(); });
+    connect(m_weekDateEdit, &QDateEdit::dateChanged, this, [this](const QDate &date) {
+        const QDate weekStart = ScheduleWeek::startDate(date);
+        if (date != weekStart) {
+            m_weekDateEdit->setDate(weekStart);
+        }
+    });
     connect(m_table, &QTableWidget::cellClicked, this, [this](int row, int) { onRowSelected(row); });
 
     loadEmployees();

@@ -28,7 +28,7 @@ bool AttendanceDAO::addAttendance(const Attendance &attendance)
     query.prepare("INSERT INTO attendance_records (employee_id, attendance_date, status, remark) "
                   "VALUES (:employee_id, :attendance_date, :status, :remark)");
     query.bindValue(":employee_id", attendance.employeeId);
-    query.bindValue(":attendance_date", attendance.attendanceDate);
+    query.bindValue(":attendance_date", attendance.attendanceDate.toString("yyyy-MM-dd"));
     query.bindValue(":status", attendance.status);
     query.bindValue(":remark", attendance.remark);
 
@@ -45,7 +45,7 @@ bool AttendanceDAO::updateAttendance(const Attendance &attendance)
     query.prepare("UPDATE attendance_records SET employee_id = :employee_id, attendance_date = :attendance_date, "
                   "status = :status, remark = :remark WHERE id = :id");
     query.bindValue(":employee_id", attendance.employeeId);
-    query.bindValue(":attendance_date", attendance.attendanceDate);
+    query.bindValue(":attendance_date", attendance.attendanceDate.toString("yyyy-MM-dd"));
     query.bindValue(":status", attendance.status);
     query.bindValue(":remark", attendance.remark);
     query.bindValue(":id", attendance.id);
@@ -81,7 +81,7 @@ bool AttendanceDAO::existsAttendance(int employeeId, const QDate &date, int excl
     query.prepare("SELECT COUNT(*) FROM attendance_records WHERE employee_id = :employee_id "
                   "AND attendance_date = :attendance_date AND id <> :exclude_id");
     query.bindValue(":employee_id", employeeId);
-    query.bindValue(":attendance_date", date);
+    query.bindValue(":attendance_date", date.toString("yyyy-MM-dd"));
     query.bindValue(":exclude_id", excludeId);
 
     if (!query.exec()) {
@@ -98,7 +98,7 @@ QList<Attendance> AttendanceDAO::getAttendanceByDate(const QDate &date)
     query.prepare("SELECT a.*, e.employee_no, e.name FROM attendance_records a "
                   "JOIN employees e ON a.employee_id = e.id "
                   "WHERE a.attendance_date = :attendance_date ORDER BY e.employee_no");
-    query.bindValue(":attendance_date", date);
+    query.bindValue(":attendance_date", date.toString("yyyy-MM-dd"));
 
     if (!query.exec()) {
         QMessageBox::critical(nullptr, "数据库错误", "按日期查询出勤失败：\n" + query.lastError().text());
@@ -137,7 +137,7 @@ int AttendanceDAO::findIdByEmployeeAndDate(int employeeId, const QDate &date)
     query.prepare("SELECT id FROM attendance_records "
                   "WHERE employee_id = :employee_id AND attendance_date = :attendance_date LIMIT 1");
     query.bindValue(":employee_id", employeeId);
-    query.bindValue(":attendance_date", date);
+    query.bindValue(":attendance_date", date.toString("yyyy-MM-dd"));
 
     if (!query.exec()) {
         QMessageBox::critical(nullptr, "数据库错误", "查询出勤记录 ID 失败：\n" + query.lastError().text());
